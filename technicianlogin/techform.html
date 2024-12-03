@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .job-list {
+            display: none;
+            margin-top: 20px;
+        }
+        .job-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .job-list li {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .job-list li label {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        #cbutton {
+            background-color: rgb(24, 177, 110);
+           
+        }
+        #ibutton {
+            background-color: rgb(188, 12, 12);
+           
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="cbutton" onclick="showCompleted()">Completed Jobs</button>
+        <button id="ibutton" onclick="showIncomplete()">Incomplete Jobs</button>
+
+        <div id="completedJobs" class="job-list">
+            <h2>Completed Jobs</h2>
+            <ul id="completedJobsList">
+                <li>Job 1: Completed</li>
+                <li>Job 2: Completed</li>
+                <li>Job 3: Completed</li>
+                <li>Job 3: Completed</li>
+                <!-- Add more completed jobs here -->
+            </ul>
+        </div>
+
+        <div id="incompleteJobs" class="job-list">
+            <h2>Incomplete Jobs</h2>
+            <ul id="incompleteJobsList">
+                <li>
+                    <input type="checkbox" id="jobA" onchange="toggleJobStatus('jobA', 'Job A')">
+                    <label for="jobA">Job A: Incomplete</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="jobB" onchange="toggleJobStatus('jobB', 'Job B')">
+                    <label for="jobB">Job B: Incomplete</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="jobC" onchange="toggleJobStatus('jobC', 'Job C')">
+                    <label for="jobC">Job C: Incomplete</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="jobD" onchange="toggleJobStatus('jobC', 'Job C')">
+                    <label for="jobC">Job D: Incomplete</label>
+                </li>
+
+                <!-- Add more incomplete jobs here -->
+            </ul>
+        </div>
+    </div>
+    <script>
+        function showCompleted() {
+            document.getElementById('completedJobs').style.display = 'block';
+            document.getElementById('incompleteJobs').style.display = 'none';
+        }
+        
+        function showIncomplete() {
+            document.getElementById('completedJobs').style.display = 'none';
+            document.getElementById('incompleteJobs').style.display = 'block';
+        }
+
+        function toggleJobStatus(jobId, jobName) {
+            const checkbox = document.getElementById(jobId);
+            if (checkbox.checked) {
+                const completedJobsList = document.getElementById('completedJobsList');
+                const newJobItem = document.createElement('li');
+                newJobItem.textContent = `${jobName}: Completed`;
+                completedJobsList.appendChild(newJobItem);
+
+                const jobItem = checkbox.parentElement;
+                jobItem.remove();
+            }
+        }
+
+        const completedJobs = [
+    { id: 1, name: "Job 1", completed: true },
+    { id: 2, name: "Job 2", completed: true },
+    { id: 3, name: "Job 3", completed: true }
+];
+
+const incompleteJobs = [
+    { id: 4, name: "Job 4", completed: false },
+    { id: 5, name: "Job 5", completed: false },
+    { id: 6, name: "Job 6", completed: false }
+];
+
+function showCompletedJobs() {
+    displayJobs(completedJobs, false);
+}
+
+function showIncompleteJobs() {
+    displayJobs(incompleteJobs, true);
+}
+
+function displayJobs(jobs, allowToggle) {
+    const jobList = document.getElementById(allowToggle ? 'incompleteJobsList' : 'completedJobsList');
+    jobList.innerHTML = '';
+    jobs.forEach(job => {
+        const jobItem = document.createElement('li');
+        jobItem.className = 'job-item';
+        jobItem.innerHTML = `
+            <input type="checkbox" id="job-${job.id}" ${job.completed ? 'checked' : ''} ${allowToggle ? '' : 'disabled'} onchange="toggleJobStatus(${job.id})">
+            <label for="job-${job.id}">${job.name}</label>
+            ${allowToggle ? `<button onclick="editJob(${job.id})">Edit</button> <button onclick="deleteJob(${job.id})">Delete</button>` : ''}
+        `;
+        jobList.appendChild(jobItem);
+    });
+}
+
+function toggleJobStatus(jobId) {
+    const jobIndex = incompleteJobs.findIndex(j => j.id === jobId);
+    if (jobIndex > -1) {
+        const [job] = incompleteJobs.splice(jobIndex, 1);
+        job.completed = !job.completed;
+        completedJobs.push(job);
+        showIncompleteJobs(); // Refresh the list to reflect changes
+    }
+}
+
+function editJob(jobId) {
+    const job = incompleteJobs.find(j => j.id === jobId);
+    const newJobName = prompt('Edit job name:', job.name);
+    if (newJobName) {
+        job.name = newJobName;
+        showIncompleteJobs();
+    }
+}
+
+function deleteJob(jobId) {
+    const jobIndex = incompleteJobs.findIndex(j => j.id === jobId);
+    if (jobIndex > -1) {
+        incompleteJobs.splice(jobIndex, 1);
+        showIncompleteJobs(); // Refresh the list to reflect changes
+    }
+}
+
+// Initial display of incomplete jobs
+showIncompleteJobs();
+
+    </script>
+</body>
+</html>
